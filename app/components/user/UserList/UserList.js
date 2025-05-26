@@ -24,6 +24,7 @@ const UserList = () => {
       setUsers(data.data || []);
       setError(null);
     } catch (err) {
+      console.error('Error fetching users:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -38,6 +39,7 @@ const UserList = () => {
       });
       setUsers(users.filter(user => user.id !== id));
     } catch (err) {
+      console.error('Error deleting user:', err);
       alert(err.message || 'خطا در حذف کاربر');
     }
   };
