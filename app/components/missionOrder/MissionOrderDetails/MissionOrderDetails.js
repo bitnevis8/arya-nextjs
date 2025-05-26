@@ -54,6 +54,7 @@ const MissionOrderDetails = ({ missionOrderId }) => {
   const [defaultRate, setDefaultRate] = useState(null);
   const [rateLoading, setRateLoading] = useState(true);
   const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
     const fetchDefaultRate = async () => {
@@ -80,11 +81,15 @@ const MissionOrderDetails = ({ missionOrderId }) => {
         const orderData = await orderResponse.json();
         const missionOrder = orderData.data;
 
+        console.log('Mission Order Data:', missionOrder);
+
         const locationsResponse = await fetch(API_ENDPOINTS.unitLocations.getAll);
         if (!locationsResponse.ok) { throw new Error(`خطا در دریافت اطلاعات واحدها: ${locationsResponse.status}`); }
         const locationsData = await locationsResponse.json();
         const units = locationsData.data || [];
         setUnitLocations(units);
+
+        console.log('Companions:', missionOrder.companions);
 
         const unit = units.find(u => u.name === missionOrder.fromUnit);
         if (!unit) { throw new Error('واحد مبدا یافت نشد'); }
@@ -121,6 +126,23 @@ const MissionOrderDetails = ({ missionOrderId }) => {
     };
     if (missionOrderId) { fetchData(); }
   }, [missionOrderId, reset, rateLoading, defaultRate, setValue]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.users.getAll);
+        if (!response.ok) {
+          throw new Error('خطا در دریافت لیست کاربران');
+        }
+        const data = await response.json();
+        setUsers(data.data || []);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const calculateRoute = async (origin, destinations, currentRate) => {
     if (currentRate === null) { return; }
@@ -364,6 +386,11 @@ const MissionOrderDetails = ({ missionOrderId }) => {
     window.URL.revokeObjectURL(url);
   };
 
+  const getUserNameById = (id) => {
+    const user = users.find(user => user.id === id);
+    return user ? `${user.firstName} ${user.lastName}` : 'نامشخص';
+  };
+
   if (initialLoading) {
     return ( <div className="flex justify-center items-center min-h-[400px]"><div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div></div> );
   }
@@ -532,6 +559,26 @@ const MissionOrderDetails = ({ missionOrderId }) => {
           <div className="w-full">
             <label className="block text-sm font-medium text-gray-700 mb-1">توضیحات ماموریت</label>
             <textarea {...register('missionDescription')} rows="4" readOnly className="w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-md bg-gray-100 text-sm sm:text-base"/>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">مسئول مأموریت</h2>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <p><span className="font-medium">نام و نام خانوادگی:</span> {getUserNameById(watch('userId'))}</p>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-semibold text-gray-700 mb-2">همراهان مأموریت</h2>
+            <div className="bg-gray-50 p-4 rounded-lg">
+              {watch('companions') && watch('companions').length > 0 ? (
+                watch('companions').map((companionId, index) => (
+                  <p key={index}><span className="font-medium">همراه {index + 1}:</span> {getUserNameById(companionId)}</p>
+                ))
+              ) : (
+                <p>همراهی ثبت نشده است.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

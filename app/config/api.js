@@ -2,9 +2,7 @@
 const isDevelopment = process.env.NODE_ENV === 'development';
 console.log('Current environment:', process.env.NODE_ENV); // برای دیباگ
 
-export const API_BASE_URL = isDevelopment
-  ? 'http://localhost:3000'
-  : 'https://api.parandx.com';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 export const API_ENDPOINTS = {
   unitLocations: {
@@ -15,6 +13,14 @@ export const API_ENDPOINTS = {
     update: (id) => `${API_BASE_URL}/aryafoulad/unit-locations/update/${id}`,
     delete: (id) => `${API_BASE_URL}/aryafoulad/unit-locations/delete/${id}`,
     default: `${API_BASE_URL}/aryafoulad/unit-locations/default`,
+  },
+  users: {
+    base: `${API_BASE_URL}/user/user`,
+    getAll: `${API_BASE_URL}/user/user/getAll`,
+    getById: (id) => `${API_BASE_URL}/user/user/getOne/${id}`,
+    create: `${API_BASE_URL}/user/user/create`,
+    update: (id) => `${API_BASE_URL}/user/user/update/${id}`,
+    delete: (id) => `${API_BASE_URL}/user/user/delete/${id}`,
   },
   missionOrders: {
     base: `${API_BASE_URL}/aryafoulad/mission-orders`,
@@ -32,5 +38,39 @@ export const API_ENDPOINTS = {
     update: (id) => `${API_BASE_URL}/aryafoulad/rate-settings/update/${id}`,
     delete: (id) => `${API_BASE_URL}/aryafoulad/rate-settings/delete/${id}`,
     getById: (id) => `${API_BASE_URL}/aryafoulad/rate-settings/${id}`,
+  },
+  // انبارداری
+  warehouse: {
+    base: `${API_BASE_URL}/aryafoulad/warehouse-module/warehouse`,
+    getAll: `${API_BASE_URL}/aryafoulad/warehouse-module/warehouse/getAll`,
+    getById: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/warehouse/getOne/${id}`,
+    create: `${API_BASE_URL}/aryafoulad/warehouse-module/warehouse/create`,
+    update: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/warehouse/update/${id}`,
+    delete: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/warehouse/delete/${id}`,
+    search: (query) => `${API_BASE_URL}/aryafoulad/warehouse-module/warehouse/search?query=${query}`,
+  },
+  items: {
+    base: `${API_BASE_URL}/aryafoulad/warehouse-module/item`,
+    getAll: `${API_BASE_URL}/aryafoulad/warehouse-module/item/getAll`,
+    getById: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item/getOne/${id}`,
+    create: `${API_BASE_URL}/aryafoulad/warehouse-module/item/create`,
+    update: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item/update/${id}`,
+    delete: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item/delete/${id}`,
+  },
+  inventory: {
+    base: `${API_BASE_URL}/aryafoulad/warehouse-module/inventory`,
+    getAll: `${API_BASE_URL}/aryafoulad/warehouse-module/inventory/getAll`,
+    getById: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/inventory/getOne/${id}`,
+    create: `${API_BASE_URL}/aryafoulad/warehouse-module/inventory/create`,
+    update: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/inventory/update/${id}`,
+    delete: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/inventory/delete/${id}`,
+  },
+  itemAssignments: {
+    base: `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment`,
+    getAll: `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/getAll`,
+    getById: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/getOne/${id}`,
+    create: `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/create`,
+    update: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/update/${id}`,
+    delete: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/delete/${id}`,
   },
 }; 

@@ -13,6 +13,9 @@ import { API_ENDPOINTS } from "@/app/config/api";
 import LeafletConfig from '@/app/components/map/LeafletConfig';
 import SearchBox from '@/app/components/ui/Map/SearchBox';
 import { calculateRouteDetails, calculateFinalCost } from '@/app/utils/routeCalculations';
+import { useRouter } from 'next/navigation';
+import Select from 'react-select';
+import Button from '@/app/components/ui/Button/Button';
 
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
@@ -45,6 +48,7 @@ const MapEvents = ({ onLocationSelect }) => {
 };
 
 const MissionOrderCreate = () => {
+  const router = useRouter();
   const { register, handleSubmit, setValue, watch, reset } = useForm({
     defaultValues: {
       firstName: '',
@@ -66,7 +70,9 @@ const MissionOrderCreate = () => {
       estimatedTime: '',
       estimatedReturnTime: '',
       sessionCode: '',
-      finalCost: 0
+      finalCost: 0,
+      userId: null,
+      companionIds: []
     }
   });
 
@@ -77,6 +83,9 @@ const MissionOrderCreate = () => {
   const [defaultRate, setDefaultRate] = useState(null);
   const [rateLoading, setRateLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState(ARYAFOULAD_COORDS);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Function to update map center from SearchBox
   const handleSearchSelect = (coords) => {
@@ -132,6 +141,30 @@ const MissionOrderCreate = () => {
       }
     };
     fetchDefaultRate();
+  }, []);
+
+  // دریافت لیست کاربران
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.users.getAll);
+        if (!response.ok) throw new Error('خطا در دریافت لیست کاربران');
+        const data = await response.json();
+        if (data.success) {
+          setUsers(data.data.map(user => ({
+            value: user.id,
+            label: `${user.firstName} ${user.lastName} (${user.personnelNumber})`
+          })));
+        } else {
+          throw new Error(data.message || 'خطا در دریافت لیست کاربران');
+        }
+      } catch (err) {
+        console.error('Error fetching users:', err);
+        setError('خطا در دریافت لیست کاربران');
+      }
+    };
+
+    fetchUsers();
   }, []);
 
   const calculateRoute = async (origin, destinations) => {
@@ -232,33 +265,46 @@ const MissionOrderCreate = () => {
   };
 
   const onSubmit = async (data) => {
-    // Remove ratePerKm before submitting if it exists
-    const submitData = { ...data };
-    delete submitData.ratePerKm;
-
     try {
+        setLoading(true);
+        const processedData = {
+            ...data,
+            userId: data.userId?.value,
+            companionIds: data.companionIds?.map(c => c.value) || []
+        };
+        console.log('=== Form Data ===');
+        console.log('Original data:', data);
+        console.log('Processed data:', processedData);
+        console.log('userId:', processedData.userId);
+        console.log('companionIds:', processedData.companionIds);
+
       const response = await fetch(API_ENDPOINTS.missionOrders.create, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
         },
-        body: JSON.stringify(submitData), // Use submitData without ratePerKm
-      });
+            body: JSON.stringify(processedData),
+        });
 
-      if (response.ok) {
-        alert('حکم ماموریت با موفقیت ثبت شد');
-        // Reset form
-        Object.keys(data).forEach(key => setValue(key, ''));
-        setDestinations([]);
-        setRoute(null);
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'خطا در ایجاد ماموریت');
+        }
+        
+        const result = await response.json();
+        console.log('=== Response ===');
+        console.log(result);
+        
+        if (result.success) {
+            router.push('/dashboard/missionOrder');
       } else {
-        const errorData = await response.json();
-        alert('خطا در ثبت حکم ماموریت: ' + (errorData.message || 'خطای نامشخص'));
+            throw new Error(result.message || 'خطا در ایجاد ماموریت');
       }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('خطا در ثبت حکم ماموریت. لطفاً دوباره تلاش کنید.');
+    } catch (err) {
+        console.error('Error creating mission order:', err);
+        setError(err.message || 'خطا در ایجاد ماموریت');
+    } finally {
+        setLoading(false);
     }
   };
 
@@ -556,14 +602,56 @@ const MissionOrderCreate = () => {
             />
           </div>
 
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200 text-sm sm:text-base"
-            >
-              ثبت حکم ماموریت
-            </button>
+          {/* فیلد انتخاب کاربر */}
+          <div className="form-group">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              مسئول ماموریت
+            </label>
+            <Select
+              options={users}
+              onChange={(selected) => setValue('userId', selected)}
+              placeholder="انتخاب مسئول ماموریت..."
+              isClearable
+              className="react-select"
+            />
           </div>
+
+          {/* فیلد انتخاب همراهان */}
+          <div className="form-group">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              همراهان ماموریت
+            </label>
+            <Select
+              options={users}
+              onChange={(selected) => setValue('companionIds', selected)}
+              placeholder="انتخاب همراهان..."
+              isMulti
+              className="react-select"
+            />
+          </div>
+
+          <div className="flex justify-end space-x-4">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => router.back()}
+            >
+              انصراف
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              loading={loading}
+            >
+              ایجاد ماموریت
+            </Button>
+          </div>
+
+          {error && (
+            <div className="text-red-500 text-sm mt-2">
+              {error}
+            </div>
+          )}
         </form>
       </div>
     </div>

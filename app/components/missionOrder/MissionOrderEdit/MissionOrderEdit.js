@@ -15,6 +15,7 @@ import Button from '@/app/components/ui/Button/Button';
 import LeafletConfig from '@/app/components/map/LeafletConfig';
 import SearchBox from '@/app/components/ui/Map/SearchBox';
 import { calculateRouteDetails, calculateFinalCost } from '@/app/utils/routeCalculations';
+import Select from 'react-select';
 
 const MapContainer = dynamic(
   () => import('react-leaflet').then((mod) => mod.MapContainer),
@@ -81,6 +82,7 @@ const MissionOrderEdit = ({ missionOrderId }) => {
   const [defaultRate, setDefaultRate] = useState(null);
   const [rateLoading, setRateLoading] = useState(true);
   const [mapCenter, setMapCenter] = useState([31.3488, 48.7228]); // Default to AryaFoulad initially
+  const [users, setUsers] = useState([]); // لیست کاربران برای انتخاب
 
   const handleSearchSelect = (coords) => {
     setMapCenter(coords);
@@ -195,12 +197,20 @@ const MissionOrderEdit = ({ missionOrderId }) => {
         
         // Reset form with mission order data 
         const { ratePerKm, ...orderDataToReset } = missionOrder;
+        console.log('Mission Order Data:', missionOrder); // Log mission order data
+        console.log('User ID:', missionOrder.userId); // Log user ID
+        console.log('Companions:', missionOrder.companions); // Log companions
+
         reset({
           ...orderDataToReset,
           destinations: processedDestinations,
           fromUnit: unit ? unit.name : '', // Handle case where unit might not be found
           day: missionOrder.day ? new Date(missionOrder.day) : null
         });
+
+        // Set userId and companions in the form
+        setValue('userId', missionOrder.userId);
+        setValue('companions', missionOrder.companions);
         
         // Calculate route if needed (logic might need adjustment based on when rate is available)
         if (unit && processedDestinations.length > 0 && !rateLoading && defaultRate !== null) {
@@ -226,6 +236,24 @@ const MissionOrderEdit = ({ missionOrderId }) => {
       calculateRoute(selectedUnit, destinations, defaultRate);
     }
   }, [rateLoading, defaultRate, initialLoading, selectedUnit, destinations]);
+
+  // Fetch users for selection
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.users.getAll);
+        if (!response.ok) {
+          throw new Error('خطا در دریافت لیست کاربران');
+        }
+        const data = await response.json();
+        setUsers(data.data || []);
+      } catch (err) {
+        console.error('Error fetching users:', err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
 
   const calculateRoute = async (origin, destinations, currentRate) => {
     if (currentRate === null) {
@@ -331,6 +359,12 @@ const MissionOrderEdit = ({ missionOrderId }) => {
     }
   };
 
+  // Transform users for react-select
+  const userOptions = users.map(user => ({
+    value: user.id,
+    label: `${user.firstName} ${user.lastName}`
+  }));
+
   const onSubmit = async (data) => {
     setLoading(true);
     setError(null);
@@ -361,6 +395,8 @@ const MissionOrderEdit = ({ missionOrderId }) => {
         day: formattedDay,
         destinations: submitData.destinations || []
     };
+
+    console.log('Submitting data:', finalSubmitData); // Log the data being submitted
 
     try {
       const response = await fetch(API_ENDPOINTS.missionOrders.update(missionOrderId), {
@@ -609,6 +645,32 @@ const MissionOrderEdit = ({ missionOrderId }) => {
           <div className="w-full">
             <label className="block text-sm font-medium text-gray-700 mb-1">توضیحات ماموریت</label>
             <textarea {...register('missionDescription')} rows="4" className="w-full px-2 sm:px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base"/>
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="userId">مسئول مأموریت</label>
+            <Select
+              id="userId"
+              options={userOptions}
+              onChange={(selectedOption) => setValue('userId', selectedOption ? selectedOption.value : '')}
+              className="basic-single"
+              classNamePrefix="select"
+              isClearable
+              defaultValue={userOptions.find(option => option.value === watch('userId'))}
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="companionIds">همراهان مأموریت</label>
+            <Select
+              id="companionIds"
+              options={userOptions}
+              onChange={(selectedOptions) => setValue('companionIds', selectedOptions ? selectedOptions.map(option => option.value) : [])}
+              className="basic-multi-select"
+              classNamePrefix="select"
+              isMulti
+              defaultValue={userOptions.filter(option => watch('companions').includes(option.value))}
+            />
           </div>
 
           <div className="flex justify-end">
