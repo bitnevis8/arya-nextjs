@@ -8,7 +8,11 @@ export const fetchWithCredentials = async (endpoint, options = {}) => {
     },
   };
 
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+  const fullUrl = `${API_BASE_URL}${endpoint}`;
+  console.log('Making API request to:', fullUrl);
+  console.log('Request options:', { ...defaultOptions, ...options });
+
+  const response = await fetch(fullUrl, {
     ...defaultOptions,
     ...options,
     headers: {
@@ -19,6 +23,11 @@ export const fetchWithCredentials = async (endpoint, options = {}) => {
 
   if (!response.ok) {
     const error = await response.json();
+    console.error('API request failed:', {
+      url: fullUrl,
+      status: response.status,
+      error
+    });
     throw new Error(error.message || 'خطا در ارتباط با سرور');
   }
 

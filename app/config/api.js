@@ -22,6 +22,14 @@ export const API_ENDPOINTS = {
     update: (id) => `${API_BASE_URL}/user/user/update/${id}`,
     delete: (id) => `${API_BASE_URL}/user/user/delete/${id}`,
   },
+  roles: {
+    base: `${API_BASE_URL}/user/role`,
+    getAll: `${API_BASE_URL}/user/role/getAll`,
+    getById: (id) => `${API_BASE_URL}/user/role/getOne/${id}`,
+    create: `${API_BASE_URL}/user/role/create`,
+    update: (id) => `${API_BASE_URL}/user/role/update/${id}`,
+    delete: (id) => `${API_BASE_URL}/user/role/delete/${id}`,
+  },
   missionOrders: {
     base: `${API_BASE_URL}/aryafoulad/mission-orders`,
     getAll: `${API_BASE_URL}/aryafoulad/mission-orders/getAll`,
