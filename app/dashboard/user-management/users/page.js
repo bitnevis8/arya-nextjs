@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { API_ENDPOINTS } from "@/app/config/api";
 
 export default function UsersList() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function UsersList() {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch("/api/user/getAll");
+      const response = await fetch(API_ENDPOINTS.users.getAll);
       const data = await response.json();
 
       if (data.success) {
@@ -38,7 +39,7 @@ export default function UsersList() {
     }
 
     try {
-      const response = await fetch(`/api/user/delete?id=${id}`, {
+      const response = await fetch(API_ENDPOINTS.users.delete(id), {
         method: "DELETE",
       });
 

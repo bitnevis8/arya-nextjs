@@ -1,33 +1,59 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { API_ENDPOINTS } from "@/app/config/api";
 
 export default function RolesList() {
+  const router = useRouter();
   const [roles, setRoles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchRoles = async () => {
-      try {
-        const response = await fetch("/api/role/getAll");
-        const data = await response.json();
-        
-        if (data.success) {
-          setRoles(data.data || []);
-        } else {
-          setError(data.message || "خطا در دریافت اطلاعات نقش‌ها");
-        }
-      } catch (error) {
-        setError("خطا در ارتباط با سرور");
-        console.error("Error fetching roles:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRoles();
   }, []);
+
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.roles.getAll);
+      const data = await response.json();
+      
+      if (data.success) {
+        setRoles(data.data || []);
+      } else {
+        setError(data.message || "خطا در دریافت اطلاعات نقش‌ها");
+      }
+    } catch (error) {
+      setError("خطا در ارتباط با سرور");
+      console.error("Error fetching roles:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!confirm("آیا از حذف این نقش اطمینان دارید؟")) {
+      return;
+    }
+
+    try {
+      const response = await fetch(API_ENDPOINTS.roles.delete(id), {
+        method: "DELETE",
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        fetchRoles(); // بارگذاری مجدد لیست نقش‌ها
+      } else {
+        setError(data.message || "خطا در حذف نقش");
+      }
+    } catch (error) {
+      setError("خطا در ارتباط با سرور");
+      console.error("Error deleting role:", error);
+    }
+  };
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-[200px]">
@@ -45,7 +71,10 @@ export default function RolesList() {
     <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">لیست نقش‌ها</h1>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+        <button 
+          onClick={() => router.push('/dashboard/user-management/roles/create')}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+        >
           افزودن نقش جدید
         </button>
       </div>
@@ -74,8 +103,18 @@ export default function RolesList() {
                   <td className="py-3 px-4 border-b text-right">{role.nameEn}</td>
                   <td className="py-3 px-4 border-b text-right">{role.nameFa}</td>
                   <td className="py-3 px-4 border-b text-right">
-                    <button className="text-blue-500 hover:text-blue-700 ml-2">ویرایش</button>
-                    <button className="text-red-500 hover:text-red-700">حذف</button>
+                    <button 
+                      onClick={() => router.push(`/dashboard/user-management/roles/${role.id}/edit`)}
+                      className="text-blue-500 hover:text-blue-700 ml-2"
+                    >
+                      ویرایش
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(role.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      حذف
+                    </button>
                   </td>
                 </tr>
               ))

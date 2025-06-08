@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { API_ENDPOINTS } from "@/app/config/api";
 
 export default function CreateUser() {
   const router = useRouter();
@@ -21,7 +22,7 @@ export default function CreateUser() {
 
   useEffect(() => {
     // دریافت لیست نقش‌ها
-    fetch("/api/role/getAll")
+    fetch(API_ENDPOINTS.roles.getAll)
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
@@ -47,7 +48,7 @@ export default function CreateUser() {
     setError(null);
 
     try {
-      const response = await fetch("/api/user/create", {
+      const response = await fetch(API_ENDPOINTS.users.create, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

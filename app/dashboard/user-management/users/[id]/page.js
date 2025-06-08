@@ -2,6 +2,7 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
+import { API_ENDPOINTS } from "@/app/config/api";
 
 export default function EditUser({ params }) {
   const router = useRouter();
@@ -28,8 +29,8 @@ export default function EditUser({ params }) {
         setError(null);
 
         const [userResponse, rolesResponse] = await Promise.all([
-          fetch(`/api/user/getOne?id=${userId}`),
-          fetch("/api/role/getAll")
+          fetch(API_ENDPOINTS.users.getById(userId)),
+          fetch(API_ENDPOINTS.roles.getAll)
         ]);
 
         if (!userResponse.ok || !rolesResponse.ok) {
@@ -84,7 +85,7 @@ export default function EditUser({ params }) {
     setError(null);
 
     try {
-      const response = await fetch(`/api/user/update?id=${userId}`, {
+      const response = await fetch(API_ENDPOINTS.users.update(userId), {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
