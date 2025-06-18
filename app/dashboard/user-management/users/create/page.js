@@ -17,7 +17,7 @@ export default function CreateUser() {
     phone: "",
     username: "",
     password: "",
-    roleId: "",
+    roleIds: [],
   });
 
   useEffect(() => {
@@ -35,11 +35,24 @@ export default function CreateUser() {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
+    const { name, value, options } = e.target;
+
+    setFormData((prev) => {
+      if (name === "roleIds") {
+        const selectedRoles = Array.from(options)
+          .filter(option => option.selected)
+          .map(option => parseInt(option.value, 10));
+        return {
+          ...prev,
+          [name]: selectedRoles,
+        };
+      } else {
+        return {
       ...prev,
       [name]: value,
-    }));
+        };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -180,16 +193,16 @@ export default function CreateUser() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                نقش
+                نقش‌ها
               </label>
               <select
-                name="roleId"
-                value={formData.roleId}
+                name="roleIds"
+                value={formData.roleIds.map(String)}
                 onChange={handleChange}
+                multiple
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-32"
               >
-                <option value="">انتخاب نقش</option>
                 {roles.map((role) => (
                   <option key={role.id} value={role.id}>
                     {role.nameFa || role.name}

@@ -149,110 +149,126 @@ const InventoryForm = ({ inventoryId = null }) => {
   if (loading && inventoryId) return <div className="text-center py-10">در حال بارگیری...</div>;
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="max-w-full sm:max-w-2xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md">
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>
       )}
       <div className="space-y-4">
-        <div>
-          <label htmlFor="warehouseId" className="block text-sm font-medium text-gray-700 mb-1">انبار</label>
-          <select
-            id="warehouseId"
-            name="warehouseId"
-            value={formData.warehouseId}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+          <div>
+            <label htmlFor="warehouseId" className="block text-sm font-medium text-gray-700 mb-1">انبار</label>
+            <select
+              id="warehouseId"
+              name="warehouseId"
+              value={formData.warehouseId}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="">انتخاب انبار</option>
+              {warehouses.map((warehouse) => (
+                <option key={warehouse.id} value={warehouse.id}>
+                  {warehouse.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="itemId" className="block text-sm font-medium text-gray-700 mb-1">کالا</label>
+            <select
+              id="itemId"
+              name="itemId"
+              value={formData.itemId}
+              onChange={handleChange}
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+            >
+              <option value="">انتخاب کالا</option>
+              {items.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name} ({item.code})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">موجودی</label>
+            <Input
+              id="quantity"
+              name="quantity"
+              type="number"
+              value={formData.quantity}
+              onChange={handleChange}
+              required
+              min="0"
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="minQuantity" className="block text-sm font-medium text-gray-700 mb-1">حداقل موجودی</label>
+            <Input
+              id="minQuantity"
+              name="minQuantity"
+              type="number"
+              value={formData.minQuantity}
+              onChange={handleChange}
+              required
+              min="0"
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="maxQuantity" className="block text-sm font-medium text-gray-700 mb-1">حداکثر موجودی</label>
+            <Input
+              id="maxQuantity"
+              name="maxQuantity"
+              type="number"
+              value={formData.maxQuantity}
+              onChange={handleChange}
+              required
+              min="0"
+              className="w-full"
+            />
+          </div>
+          <div>
+            <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">موقعیت در انبار</label>
+            <Input
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="موقعیت کالا در انبار را وارد کنید"
+              className="w-full"
+            />
+          </div>
+          <div className="col-span-1 md:col-span-2">
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">توضیحات</label>
+            <textarea
+              id="notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              rows="4"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+              placeholder="توضیحات را وارد کنید"
+            />
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={loading}
+            className="w-full sm:w-auto"
           >
-            <option value="">انتخاب انبار</option>
-            {warehouses.map((warehouse) => (
-              <option key={warehouse.id} value={warehouse.id}>
-                {warehouse.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="itemId" className="block text-sm font-medium text-gray-700 mb-1">کالا</label>
-          <select
-            id="itemId"
-            name="itemId"
-            value={formData.itemId}
-            onChange={handleChange}
-            required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="">انتخاب کالا</option>
-            {items.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name} ({item.code})
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">موجودی</label>
-          <Input
-            id="quantity"
-            name="quantity"
-            type="number"
-            value={formData.quantity}
-            onChange={handleChange}
-            required
-            min="0"
-          />
-        </div>
-        <div>
-          <label htmlFor="minQuantity" className="block text-sm font-medium text-gray-700 mb-1">حداقل موجودی</label>
-          <Input
-            id="minQuantity"
-            name="minQuantity"
-            type="number"
-            value={formData.minQuantity}
-            onChange={handleChange}
-            required
-            min="0"
-          />
-        </div>
-        <div>
-          <label htmlFor="maxQuantity" className="block text-sm font-medium text-gray-700 mb-1">حداکثر موجودی</label>
-          <Input
-            id="maxQuantity"
-            name="maxQuantity"
-            type="number"
-            value={formData.maxQuantity}
-            onChange={handleChange}
-            required
-            min="0"
-          />
-        </div>
-        <div>
-          <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">موقعیت در انبار</label>
-          <Input
-            id="location"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            placeholder="موقعیت کالا در انبار را وارد کنید"
-          />
-        </div>
-        <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">توضیحات</label>
-          <textarea
-            id="notes"
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-            rows="4"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="توضیحات را وارد کنید"
-          />
-        </div>
-        <div className="flex gap-4">
-          <Button type="submit" variant="primary" disabled={loading}>
             {loading ? 'در حال ذخیره...' : 'ذخیره'}
           </Button>
-          <Button type="button" variant="secondary" onClick={() => router.back()}>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => router.back()}
+            className="w-full sm:w-auto"
+          >
             انصراف
           </Button>
         </div>

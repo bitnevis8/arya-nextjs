@@ -21,6 +21,7 @@ export const API_ENDPOINTS = {
     create: `${API_BASE_URL}/user/user/create`,
     update: (id) => `${API_BASE_URL}/user/user/update/${id}`,
     delete: (id) => `${API_BASE_URL}/user/user/delete/${id}`,
+    search: `${API_BASE_URL}/user/user/search`,
   },
   roles: {
     base: `${API_BASE_URL}/user/role`,
@@ -80,5 +81,13 @@ export const API_ENDPOINTS = {
     create: `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/create`,
     update: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/update/${id}`,
     delete: (id) => `${API_BASE_URL}/aryafoulad/warehouse-module/item-assignment/delete/${id}`,
+  },
+  auth: {
+    registerEmail: `${API_BASE_URL}/user/auth/register/email`,
+    login: `${API_BASE_URL}/user/auth/login`,
+    verifyEmail: `${API_BASE_URL}/user/auth/verify/email`,
+    resendEmailCode: `${API_BASE_URL}/user/auth/resend-code/email`,
+    me: `${API_BASE_URL}/user/auth/me`,
+    logout: `${API_BASE_URL}/user/auth/logout`,
   },
 }; 

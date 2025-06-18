@@ -68,7 +68,7 @@ const menuItems = [
   },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ onLinkClick }) {
   const pathname = usePathname();
   const [openMenu, setOpenMenu] = useState(null);
 
@@ -112,6 +112,7 @@ export default function Sidebar() {
                       <Link
                         key={subItem.path}
                         href={subItem.path}
+                        onClick={onLinkClick}
                         className={`flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors ${
                           isActive(subItem.path) ? 'bg-gray-700' : ''
                         }`}
@@ -126,6 +127,7 @@ export default function Sidebar() {
             ) : (
               <Link
                 href={item.path}
+                onClick={onLinkClick}
                 className={`flex items-center p-2 rounded-lg hover:bg-gray-700 transition-colors ${
                   isActive(item.path) ? 'bg-gray-700' : ''
                 }`}

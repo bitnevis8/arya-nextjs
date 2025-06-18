@@ -4,9 +4,11 @@ import WarehouseForm from '@/app/components/warehouse/WarehouseForm/WarehouseFor
 export default function EditWarehousePage({ params }) {
   const { id } = use(params);
   return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-2xl font-bold mb-6">ویرایش انبار</h1>
-      <WarehouseForm warehouseId={id} />
+    <div className="p-4 md:p-6 bg-gray-100 min-h-screen">
+      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-4 md:p-6">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">ویرایش انبار</h1>
+        <WarehouseForm warehouseId={id} />
+      </div>
     </div>
   );
 } 

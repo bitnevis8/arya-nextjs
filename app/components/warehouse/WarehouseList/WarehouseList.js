@@ -99,11 +99,12 @@ const WarehouseList = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">مدیریت انبارها</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">مدیریت انبارها</h1>
         <Button
           onClick={() => router.push('/dashboard/warehouse/create')}
           variant="primary"
+          className="w-full sm:w-auto py-2 px-4 text-sm"
         >
           ایجاد انبار جدید
         </Button>

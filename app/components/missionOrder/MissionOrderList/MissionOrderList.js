@@ -173,30 +173,30 @@ const MissionOrderList = () => {
   ];
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">حکم‌های ماموریت</h1>
+    <div className="p-0">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">حکم‌های ماموریت</h1>
         <Link href="/dashboard/missionOrder/create">
-          <Button variant="primary">
+          <Button variant="primary" className="w-full sm:w-auto py-2 px-4 text-sm">
             ایجاد حکم ماموریت جدید
           </Button>
         </Link>
       </div>
 
       {missionOrders.length === 0 ? (
-        <div className="bg-gray-50 rounded-lg p-8 text-center">
-          <p className="text-gray-500 mb-4">هیچ حکم ماموریتی یافت نشد.</p>
+        <div className="bg-gray-50 rounded-lg p-6 sm:p-8 text-center">
+          <p className="text-gray-500 mb-4 text-base sm:text-lg">هیچ حکم ماموریتی یافت نشد.</p>
           <Link href="/dashboard/missionOrder/create">
-            <Button variant="primary">
+            <Button variant="primary" className="py-2 px-4 text-sm">
               ایجاد اولین حکم ماموریت
             </Button>
           </Link>
         </div>
       ) : (
-        <div className="bg-white shadow-md rounded-lg overflow-hidden">
+        <div className="bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
           {/* Desktop Table View */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   {columns.map((column) => (
@@ -210,7 +210,7 @@ const MissionOrderList = () => {
                 {missionOrders.map((order, index) => (
                   <tr key={order.id} className="hover:bg-gray-50">
                     {columns.map((column) => (
-                      <td key={column.accessor} className="px-6 py-4 whitespace-nowrap">
+                      <td key={column.accessor} className="px-6 py-4 whitespace-nowrap text-sm text-gray-800">
                         {column.cell(order, index)}
                       </td>
                     ))}
@@ -225,56 +225,42 @@ const MissionOrderList = () => {
             <div className="divide-y divide-gray-200">
               {missionOrders.map((order) => (
                 <div key={order.id} className="p-4 hover:bg-gray-50">
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 space-y-2 sm:space-y-0">
                     <div>
-                      <h3 className="text-lg font-medium text-gray-900">
+                      <h3 className="text-base font-medium text-gray-900 mb-1">
                         {order.missionSubject || 'بدون عنوان'}
                       </h3>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-xs text-gray-500">
                         {`${order.firstName || ''} ${order.lastName || ''}`}
                         {order.personnelNumber && ` - کد پرسنلی: ${order.personnelNumber}`}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-row gap-2 mt-2 sm:mt-0">
                       <Link href={`/dashboard/missionOrder/${order.id}`}>
-                        <Button variant="secondary" size="small">
+                        <Button variant="secondary" size="sm" className="text-xs py-1.5 px-3">
                           مشاهده
                         </Button>
                       </Link>
                       <Link href={`/dashboard/missionOrder/edit/${order.id}`}>
-                        <Button variant="secondary" size="small">
+                        <Button variant="secondary" size="sm" className="text-xs py-1.5 px-3">
                           ویرایش
                         </Button>
                       </Link>
                       <Button 
                         variant="danger" 
-                        size="small" 
+                        size="sm" 
                         onClick={() => handleDelete(order.id)}
+                        className="text-xs py-1.5 px-3"
                       >
                         حذف
                       </Button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-500">تاریخ</p>
-                      <p className="text-gray-900">
-                        {order.day ? moment(order.day).format('jYYYY/jMM/jDD') : '-'}
-                        {order.time && <span className="text-gray-500 mr-2">ساعت: {order.time}</span>}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">مبدا</p>
-                      <p className="text-gray-900">{order.fromUnit || '-'}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-500">مقصد</p>
-                      <p className="text-gray-900">
-                        {order.destinations && order.destinations.length > 0
-                          ? `${order.destinations.length} مقصد`
-                          : '-'}
-                      </p>
-                    </div>
+                  <div className="grid grid-cols-2 gap-y-2 text-sm">
+                    <div><span className="font-semibold">تاریخ:</span> {order.day ? moment(order.day).format('jYYYY/jMM/jDD') : '-'}</div>
+                    {order.time && <div><span className="font-semibold">ساعت:</span> {order.time}</div>}
+                    <div><span className="font-semibold">مبدا:</span> {order.fromUnit || '-'}</div>
+                    <div><span className="font-semibold">مقصد:</span> {order.destinations && order.destinations.length > 0 ? `${order.destinations.length} مقصد` : '-'}</div>
                   </div>
                 </div>
               ))}

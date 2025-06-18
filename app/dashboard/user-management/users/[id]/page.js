@@ -18,7 +18,7 @@ export default function EditUser({ params }) {
     phone: "",
     username: "",
     password: "",
-    roleId: "",
+    roleIds: [],
   });
 
   useEffect(() => {
@@ -48,7 +48,11 @@ export default function EditUser({ params }) {
           const sanitizedUserInfo = Object.fromEntries(
             Object.entries(userInfo).map(([key, value]) => [key, value ?? ""])
           );
-          setFormData(sanitizedUserInfo);
+          // Map roles to roleIds array
+          setFormData({
+            ...sanitizedUserInfo,
+            roleIds: userData.data.roles ? userData.data.roles.map(role => role.id) : [],
+          });
         } else {
           throw new Error(userData.message || "خطا در دریافت اطلاعات کاربر");
         }
@@ -72,11 +76,25 @@ export default function EditUser({ params }) {
   }, [userId]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    const { name, value, options } = e.target;
+
+    setFormData((prev) => {
+      if (name === "roleIds") {
+        // Handle multiple selections for roleIds
+        const selectedRoles = Array.from(options)
+          .filter(option => option.selected)
+          .map(option => parseInt(option.value, 10));
+        return {
+          ...prev,
+          [name]: selectedRoles,
+        };
+      } else {
+        return {
+          ...prev,
+          [name]: value,
+        };
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -240,16 +258,16 @@ export default function EditUser({ params }) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                نقش
+                نقش‌ها
               </label>
               <select
-                name="roleId"
-                value={formData.roleId || ""}
+                name="roleIds"
+                value={formData.roleIds.map(String)}
                 onChange={handleChange}
+                multiple
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-32"
               >
-                <option value="">انتخاب نقش</option>
                 {roles.map((role) => (
                   <option key={role.id} value={role.id}>
                     {role.nameFa || role.name}

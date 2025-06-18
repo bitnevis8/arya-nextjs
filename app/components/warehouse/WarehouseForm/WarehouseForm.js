@@ -95,7 +95,7 @@ const WarehouseForm = ({ warehouseId = null }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto">
+    <form onSubmit={handleSubmit} className="max-w-full sm:max-w-2xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md">
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
@@ -114,6 +114,7 @@ const WarehouseForm = ({ warehouseId = null }) => {
             onChange={handleChange}
             required
             placeholder="نام انبار را وارد کنید"
+            className="w-full"
           />
         </div>
 
@@ -127,6 +128,7 @@ const WarehouseForm = ({ warehouseId = null }) => {
             value={formData.location}
             onChange={handleChange}
             placeholder="موقعیت انبار را وارد کنید"
+            className="w-full"
           />
         </div>
 
@@ -140,16 +142,17 @@ const WarehouseForm = ({ warehouseId = null }) => {
             value={formData.description}
             onChange={handleChange}
             rows="4"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
             placeholder="توضیحات انبار را وارد کنید"
           />
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col sm:flex-row gap-4 pt-4">
           <Button
             type="submit"
             variant="primary"
             disabled={loading}
+            className="w-full sm:w-auto"
           >
             {loading ? 'در حال ذخیره...' : 'ذخیره'}
           </Button>
@@ -157,6 +160,7 @@ const WarehouseForm = ({ warehouseId = null }) => {
             type="button"
             variant="secondary"
             onClick={() => router.back()}
+            className="w-full sm:w-auto"
           >
             انصراف
           </Button>

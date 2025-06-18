@@ -59,11 +59,12 @@ const InventoryList = () => {
       header: 'عملیات',
       accessor: 'actions',
       cell: (row) => (
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 space-y-2 sm:space-y-0 sm:space-x-2 rtl:space-x-reverse">
           <Button
             onClick={() => router.push(`/dashboard/warehouse/inventory/edit/${row.id}`)}
             variant="primary"
             size="sm"
+            className="w-full sm:w-auto text-sm py-1.5 px-3"
           >
             ویرایش
           </Button>
@@ -71,6 +72,7 @@ const InventoryList = () => {
             onClick={() => handleDelete(row.id)}
             variant="danger"
             size="sm"
+            className="w-full sm:w-auto text-sm py-1.5 px-3"
           >
             حذف
           </Button>
@@ -84,16 +86,19 @@ const InventoryList = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">لیست موجودی‌ها</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
+        <h1 className="text-xl md:text-2xl font-bold text-gray-800">لیست موجودی‌ها</h1>
         <Button
           onClick={() => router.push('/dashboard/warehouse/inventory/create')}
           variant="primary"
+          className="w-full sm:w-auto py-2 px-4 text-sm"
         >
           افزودن موجودی جدید
         </Button>
       </div>
-      <Table columns={columns} data={inventory} emptyMessage="هیچ موجودی یافت نشد" />
+      <div className="overflow-x-auto shadow-md rounded-lg border border-gray-200">
+        <Table columns={columns} data={inventory} emptyMessage="هیچ موجودی یافت نشد" />
+      </div>
     </div>
   );
 };
